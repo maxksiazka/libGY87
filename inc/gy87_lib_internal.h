@@ -6,9 +6,12 @@
 #endif
 
 #include "GY87_lib.h"
-uint8_t read_reg(gy87_t* dev, uint8_t reg_addr);
-uint8_t write_reg(gy87_t* dev, uint8_t reg_addr, uint8_t reg_val);
-int16_t read_reg16(gy87_t* dev, uint8_t reg_addr);
-int32_t write_reg16(gy87_t* dev, uint8_t reg_addr, uint16_t reg_val);
-void read_multi(gy87_t* dev, uint8_t reg_addr, uint8_t* buffer, int count);
+uint8_t read_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr);
+uint8_t write_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
+                  uint8_t reg_val);
+int16_t read_reg16(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr);
+int32_t write_reg16(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
+                    uint16_t reg_val);
+void read_multi(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
+                uint8_t* buffer, int count);
 #endif // GY87_LIB_INTERNAL_H_

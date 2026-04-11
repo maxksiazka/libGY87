@@ -5,17 +5,28 @@
 
 int32_t bmp180_init(gy87_t* device) {
     // Read calibration data from the BMP180
-    device->bmp_calib.ac1 = read_reg16(device, 0xAA);
-    device->bmp_calib.ac2 = read_reg16(device, 0xAC);
-    device->bmp_calib.ac3 = read_reg16(device, 0xAE);
-    device->bmp_calib.ac4 = read_reg16(device, 0xB0);
-    device->bmp_calib.ac5 = read_reg16(device, 0xB2);
-    device->bmp_calib.ac6 = read_reg16(device, 0xB4);
-    device->bmp_calib.b1 = read_reg16(device, 0xB6);
-    device->bmp_calib.b2 = read_reg16(device, 0xB8);
-    device->bmp_calib.mb = read_reg16(device, 0xBA);
-    device->bmp_calib.mc = read_reg16(device, 0xBC);
-    device->bmp_calib.md = read_reg16(device, 0xBE);
+    device->bmp_calib.ac1 =
+        read_reg16(device, device->config->bmp180_addr, 0xAA);
+    device->bmp_calib.ac2 =
+        read_reg16(device, device->config->bmp180_addr, 0xAC);
+    device->bmp_calib.ac3 =
+        read_reg16(device, device->config->bmp180_addr, 0xAE);
+    device->bmp_calib.ac4 =
+        read_reg16(device, device->config->bmp180_addr, 0xB0);
+    device->bmp_calib.ac5 =
+        read_reg16(device, device->config->bmp180_addr, 0xB2);
+    device->bmp_calib.ac6 =
+        read_reg16(device, device->config->bmp180_addr, 0xB4);
+    device->bmp_calib.b1 =
+        read_reg16(device, device->config->bmp180_addr, 0xB6);
+    device->bmp_calib.b2 =
+        read_reg16(device, device->config->bmp180_addr, 0xB8);
+    device->bmp_calib.mb =
+        read_reg16(device, device->config->bmp180_addr, 0xBA);
+    device->bmp_calib.mc =
+        read_reg16(device, device->config->bmp180_addr, 0xBC);
+    device->bmp_calib.md =
+        read_reg16(device, device->config->bmp180_addr, 0xBE);
     return 0;
 }
 int32_t bmp180_read(gy87_t* device) {
@@ -42,7 +53,7 @@ int32_t bmp180_get_pressure(gy87_t* device, uint32_t up) {
     x2 = (device->bmp_calib.ac5 * b6) >> 11;
     x3 = x1 + x2;
     b3 = (((((long)device->bmp_calib.ac1) * 4 + x3) << 0) + 2) >> 2;
-    
+
     x1 = (device->bmp_calib.ac3 * b6) >> 13;
     x2 = (device->bmp_calib.b1 * ((b6 * b6) >> 12)) >> 16;
     x3 = ((x1 + x2) + 2) >> 2;
@@ -62,15 +73,15 @@ int32_t bmp180_get_pressure(gy87_t* device, uint32_t up) {
     return p;
 }
 uint32_t bmp180_readUT(gy87_t* device) {
-    write_reg(device, 0xF4, 0x2E);
+    write_reg(device, device->config->bmp180_addr, 0xF4, 0x2E);
     device->config->delay_ms(5);
-    return (uint32_t)read_reg16(device, 0xF6);
+    return (uint32_t)read_reg16(device, device->config->bmp180_addr, 0xF6);
 }
 uint32_t bmp180_readUP(gy87_t* device) {
-    write_reg(device, 0xF4, 0x34);
+    write_reg(device, device->config->bmp180_addr, 0xF4, 0x34);
     device->config->delay_ms(8);
-    uint8_t msb = read_reg(device, 0xF6);
-    uint8_t lsb = read_reg(device, 0xF7);
-    uint8_t xlsb = read_reg(device, 0xF8);
+    uint8_t msb = read_reg(device, device->config->bmp180_addr, 0xF6);
+    uint8_t lsb = read_reg(device, device->config->bmp180_addr, 0xF7);
+    uint8_t xlsb = read_reg(device, device->config->bmp180_addr, 0xF8);
     return (((uint32_t)msb << 16) | ((uint32_t)lsb << 8) | xlsb) >> 8;
 }
