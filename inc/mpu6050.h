@@ -1,7 +1,7 @@
 #ifndef MPU6050_H_
 #define MPU6050_H_
 
-#include "GY87_lib.h"
+#include "GY87.h"
 
 bool verify_mpu6050(gy87_t* device);
 int32_t mpu6050_init(gy87_t* device);

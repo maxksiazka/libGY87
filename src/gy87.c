@@ -1,4 +1,4 @@
-#include "GY87_lib.h"
+#include "GY87.h"
 #include "bmp180.h"
 #include "hmc5883l.h"
 #include "mpu6050.h"
@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 gy87_t gy87_init(gy87_config_t* config) {
-    gy87_t device;
+    gy87_t device = {0};
     device.config = config;
     device.accel.x = 0;
     device.accel.y = 0;
@@ -35,6 +35,7 @@ gy87_t gy87_init(gy87_config_t* config) {
     }
 
     mpu6050_calibrate(&device);
+    device.last_read_time_ms = device.config->get_time_ms();
     return device;
 }
 int32_t gy87_read(gy87_t* device) {

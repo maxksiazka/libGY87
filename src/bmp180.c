@@ -36,7 +36,7 @@ int32_t bmp180_read(gy87_t* device) {
     return 0;
 }
 float bmp180_calc_altitude(float pressure) {
-    return (1.0 - pow(pressure / 101325.0, 0.1903)) / 0.0000225577;
+    return (1.0f - powf(pressure / 101325.0f, 0.1903f)) / 0.0000225577f;
 }
 float bmp180_get_temperature(gy87_t* device, uint32_t ut) {
     long x1 =

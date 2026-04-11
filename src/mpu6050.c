@@ -1,8 +1,8 @@
-#include "GY87_lib.h"
+#include "mpu6050.h"
 #define __GY87_LIBRARY_INTERNAL__
 #include "gy87_lib_internal.h"
 
-bool verify(gy87_t* device) {
+bool verify_mpu6050(gy87_t* device) {
     uint8_t who_am_i = read_reg(device, device->config->mpu6050_addr, 0x75);
     return who_am_i == 0x68; // Expected value for MPU6050
 }

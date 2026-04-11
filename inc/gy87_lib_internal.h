@@ -5,7 +5,7 @@
     "This header is for internal use only. Do not include it directly in your code."
 #endif
 
-#include "GY87_lib.h"
+#include "GY87.h"
 uint8_t read_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr);
 uint8_t write_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
                   uint8_t reg_val);
