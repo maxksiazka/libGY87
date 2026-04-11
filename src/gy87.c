@@ -20,6 +20,8 @@ gy87_t gy87_init(gy87_config_t* config) {
     if (!verify_mpu6050(&device)) {
         printf("MPU6050 not detected at address 0x%02X\n",
                device.config->mpu6050_addr);
+        device.last_read_time_ms = UINT32_MAX;
+        return device;
     }
     int32_t ret = mpu6050_init(&device);
     if (ret < 0) {
