@@ -5,6 +5,7 @@
 
 int32_t bmp180_init(gy87_t* device) {
     // Read calibration data from the BMP180
+    // TODO: Make this more robust by checking for read errors, this will require changes to the read_reg16 function to return an error code instead of 0 on failure
     device->bmp_calib.ac1 =
         read_reg16(device, device->config->bmp180_addr, 0xAA);
     device->bmp_calib.ac2 =
@@ -73,12 +74,16 @@ int32_t bmp180_get_pressure(gy87_t* device, uint32_t up) {
     return p;
 }
 uint32_t bmp180_readUT(gy87_t* device) {
-    write_reg(device, device->config->bmp180_addr, 0xF4, 0x2E);
+    if (write_reg(device, device->config->bmp180_addr, 0xF4, 0x2E) != 2) {
+        return 0;
+    }
     device->config->delay_ms(5);
     return (uint32_t)read_reg16(device, device->config->bmp180_addr, 0xF6);
 }
 uint32_t bmp180_readUP(gy87_t* device) {
-    write_reg(device, device->config->bmp180_addr, 0xF4, 0x34);
+    if (write_reg(device, device->config->bmp180_addr, 0xF4, 0x34) != 2) {
+        return 0;
+    }
     device->config->delay_ms(8);
     uint8_t msb = read_reg(device, device->config->bmp180_addr, 0xF6);
     uint8_t lsb = read_reg(device, device->config->bmp180_addr, 0xF7);

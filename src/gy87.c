@@ -24,21 +24,24 @@ gy87_t gy87_init(gy87_config_t* config) {
         return device;
     }
     int32_t ret = mpu6050_init(&device);
-    if (ret < 0) {
+    if (ret != 0) {
         printf("MPU6050 initialization failed with error code: %d\n", ret);
     }
     ret = hmc5883l_init(&device);
-    if (ret < 0) {
+    if (ret != 0) {
         printf("HMC5883L initialization failed with error code: %d\n", ret);
     }
-    ret = bmp180_init(&device);
-    if (ret < 0) {
+    ret = bmp180_init(&device); // error checking not yet implemented
+    if (ret != 0) {
         printf("BMP180 initialization failed with error code: %d\n", ret);
     }
 
-    mpu6050_calibrate(&device);
+    if (mpu6050_calibrate(&device) != 0) {
+        printf("MPU6050 calibration failed\n");
+    }
     device.last_read_time_ms = device.config->get_time_ms();
-    return device;
+    return device; // we're not returning early to allow the caller to check if
+                   // others initialized successfully
 }
 int32_t gy87_read(gy87_t* device) {
     int32_t ret = mpu6050_read(device);
@@ -54,7 +57,13 @@ int32_t gy87_read(gy87_t* device) {
     }
     return 0;
 }
-
+// this function is not expected to be used, this is a test. it is recommended
+// to implement your own orientation fusion algorithm in your application code,
+// since the best algorithm can depend on the use case and computational
+// resources available. This is a simple complementary filter implementation
+// that fuses accelerometer and gyroscope data for pitch and roll, and uses
+// magnetometer data for yaw. It is not intended to be a high-performance or
+// highly accurate solution, but rather a starting point for experimentation.
 void gy87_compute_orientation(gy87_t* device) {
     uint32_t now = device->config->get_time_ms();
     float dt =

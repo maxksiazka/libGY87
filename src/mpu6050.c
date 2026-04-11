@@ -10,36 +10,36 @@ int32_t mpu6050_init(gy87_t* device) {
     int32_t ret;
     // Wake up the MPU6050
     ret = write_reg(device, device->config->mpu6050_addr, 0x6B, 0x00);
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     // Set accelerometer range to ±2g
     // TODO: Make these configurable
     ret = write_reg(device, device->config->mpu6050_addr, 0x1C,
                     0x00); // set accel range to ±2g
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     // TODO: Make these configurable
     ret = write_reg(device, device->config->mpu6050_addr, 0x1B,
                     0x08); // set gyro range to ±500°/s
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     ret = write_reg(device, device->config->mpu6050_addr, 0x37,
                     0x02); // Bypass mode
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     ret = write_reg(device, device->config->mpu6050_addr, 0x6A,
                     0x00); // Disable interrupts
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     ret = write_reg(device, device->config->mpu6050_addr, 0x6B,
                     0x00); // Ensure sleep mode is disabled
-    if (ret < 0)
-        return ret;
+    if (ret != 2)
+        return 1;
 
     return 0;
 }
@@ -51,7 +51,10 @@ int32_t mpu6050_calibrate(gy87_t* device) {
 
     for (int i = 0; i < samples; i++) {
         uint8_t buffer[14];
-        read_multi(device, device->config->mpu6050_addr, 0x3B, buffer, 14);
+        if (read_multi(device, device->config->mpu6050_addr, 0x3B, buffer,
+                       14) != 14) {
+            return -1;
+        }
         int16_t axRaw = (buffer[0] << 8) | buffer[1];
         int16_t ayRaw = (buffer[2] << 8) | buffer[3];
         int16_t azRaw = (buffer[4] << 8) | buffer[5];
@@ -78,7 +81,10 @@ int32_t mpu6050_calibrate(gy87_t* device) {
 int32_t mpu6050_read(gy87_t* device) {
     // Credit to original author: rizacelik
     uint8_t buffer[14];
-    read_multi(device, device->config->mpu6050_addr, 0x3B, buffer, 14);
+    if ((read_multi(device, device->config->mpu6050_addr, 0x3B, buffer, 14) !=
+         14)) {
+        return -1; 
+    }
 
     int16_t axRaw = (buffer[0] << 8) | buffer[1];
     int16_t ayRaw = (buffer[2] << 8) | buffer[3];
