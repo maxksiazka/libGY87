@@ -2,10 +2,18 @@
 #include "gy87_lib_internal.h"
 
 #include <stdint.h>
-uint8_t read_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr) {
+uint8_t read_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr){
     uint8_t reg_buf;
-    dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
-    dev->config->i2c_read(dev->config->ctx, dev_addr, &reg_buf, 1, false);
+    int32_t ret =
+        dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
+    if (ret != 1) {
+        return 0;
+    }
+    ret = dev->config->i2c_read(dev->config->ctx, dev_addr, &reg_buf, 1, false);
+    if (ret != 1) {
+        return 0;
+    }
+
     return reg_buf;
 }
 uint8_t write_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
@@ -19,8 +27,14 @@ uint8_t write_reg(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
 }
 int16_t read_reg16(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr) {
     uint8_t payload[2];
-    dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
-    dev->config->i2c_read(dev->config->ctx, dev_addr, payload, 2, false);
+    int32_t ret = dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
+    if (ret != 1) { // we wrote 1 byte
+        return 0;
+    }
+    ret = dev->config->i2c_read(dev->config->ctx, dev_addr, payload, 2, false);
+    if (ret != 2){
+        return 0;
+    }
     return (int16_t)((payload[0] << 8) | payload[1]);
 }
 int32_t write_reg16(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
@@ -33,10 +47,14 @@ int32_t write_reg16(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
         dev->config->i2c_write(dev->config->ctx, dev_addr, payload, 3, false);
     return ret;
 }
-void read_multi(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
+int32_t read_multi(gy87_t* dev, uint32_t dev_addr, uint8_t reg_addr,
                 uint8_t* buffer, int count) {
-    dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
-    dev->config->i2c_read(dev->config->ctx, dev_addr, buffer, count, false);
+    int32_t ret = dev->config->i2c_write(dev->config->ctx, dev_addr, &reg_addr, 1, true);
+    if (ret != 1) {
+        return 0;
+    }
+    ret = dev->config->i2c_read(dev->config->ctx, dev_addr, buffer, count, false);
+    return ret;
 }
 
 // int32_t writeRegList(gy87_t* dev, uint8_t* reg_addr_val_pair_list) {
