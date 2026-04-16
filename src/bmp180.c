@@ -51,7 +51,7 @@ int32_t bmp180_get_pressure(gy87_t* device, uint32_t up) {
     unsigned long b4, b7;
     b6 = device->bmp_calib.b5 - 4000;
     x1 = (device->bmp_calib.b2 * ((b6 * b6) >> 12)) >> 11;
-    x2 = (device->bmp_calib.ac5 * b6) >> 11;
+    x2 = (device->bmp_calib.ac2 * b6) >> 11;
     x3 = x1 + x2;
     b3 = (((((long)device->bmp_calib.ac1) * 4 + x3) << 0) + 2) >> 2;
 
